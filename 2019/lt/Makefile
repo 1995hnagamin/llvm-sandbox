@@ -19,8 +19,9 @@ CXXFLAGS = -O2 -g \
 	-Wno-unused-parameter \
 
 LIBS = -L$(shell $(LLVM_CONFIG) --libdir) \
+	-lclangTooling \
 	-lclangFrontend -lclangSerialization -lclangDriver \
-	-lclangTooling -lclangParse -lclangSema \
+	-lclangParse -lclangSema \
 	-lclangAnalysis -lclangRewriteFrontend -lclangRewrite \
 	-lclangEdit -lclangAST -lclangLex -lclangBasic \
 	-lclangFrontendTool -lclangASTMatchers \
