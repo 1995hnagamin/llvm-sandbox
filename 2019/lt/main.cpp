@@ -8,7 +8,7 @@
 #include <iostream>
 #include <memory>
 
-static llvm::cl::OptionCategory LtOptionCategory("LT options");
+static llvm::cl::OptionCategory LTOptionCategory("LT options");
 
 class ListTypesVisitor : public clang::RecursiveASTVisitor<ListTypesVisitor> {
 public:
@@ -20,9 +20,9 @@ public:
   }
 };
 
-class LtASTConsumer : public clang::ASTConsumer {
+class LTASTConsumer : public clang::ASTConsumer {
 public:
-  explicit LtASTConsumer() = default;
+  explicit LTASTConsumer() = default;
 
   virtual void HandleTranslationUnit(clang::ASTContext &Context) override {
     ListTypesVisitor Visitor;
@@ -30,17 +30,17 @@ public:
   }
 };
 
-class LtFrontendAction : public clang::ASTFrontendAction {
+class LTFrontendAction : public clang::ASTFrontendAction {
 public:
   virtual std::unique_ptr<clang::ASTConsumer>
   CreateASTConsumer(clang::CompilerInstance &Compiler, llvm::StringRef File) {
-    return llvm::make_unique<LtASTConsumer>();
+    return llvm::make_unique<LTASTConsumer>();
   }
 };
 
 int main(int argc, char const **argv) {
   clang::tooling::CommonOptionsParser OptionsParser(argc, argv,
-                                                    LtOptionCategory);
+                                                    LTOptionCategory);
   auto const v = OptionsParser.getSourcePathList();
   for (auto &&x : v) {
     std::cout << x << "\n";
@@ -48,5 +48,5 @@ int main(int argc, char const **argv) {
   clang::tooling::ClangTool Tool(OptionsParser.getCompilations(),
                                  OptionsParser.getSourcePathList());
   return Tool.run(
-      clang::tooling::newFrontendActionFactory<LtFrontendAction>().get());
+      clang::tooling::newFrontendActionFactory<LTFrontendAction>().get());
 }
