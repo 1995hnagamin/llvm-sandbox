@@ -30,6 +30,14 @@ public:
   }
 };
 
+class LtFrontendAction : public clang::ASTFrontendAction {
+public:
+  virtual std::unique_ptr<clang::ASTConsumer>
+  CreateASTConsumer(clang::CompilerInstance &Compiler, llvm::StringRef File) {
+    return llvm::make_unique<LtASTConsumer>();
+  }
+};
+
 int main(int argc, char const **argv) {
   clang::tooling::CommonOptionsParser OptionsParser(argc, argv,
                                                     LtOptionCategory);
