@@ -5,7 +5,6 @@
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/CommandLine.h"
-#include <iostream>
 #include <memory>
 
 static llvm::cl::OptionCategory LTOptionCategory("LT options");
@@ -43,7 +42,7 @@ int main(int argc, char const **argv) {
                                                     LTOptionCategory);
   auto const v = OptionsParser.getSourcePathList();
   for (auto &&x : v) {
-    std::cout << x << "\n";
+    llvm::errs() << x << "\n";
   }
   clang::tooling::ClangTool Tool(OptionsParser.getCompilations(),
                                  OptionsParser.getSourcePathList());
