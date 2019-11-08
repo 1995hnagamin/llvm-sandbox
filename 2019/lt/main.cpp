@@ -45,4 +45,8 @@ int main(int argc, char const **argv) {
   for (auto &&x : v) {
     std::cout << x << "\n";
   }
+  clang::tooling::ClangTool Tool(OptionsParser.getCompilations(),
+                                 OptionsParser.getSourcePathList());
+  return Tool.run(
+      clang::tooling::newFrontendActionFactory<LtFrontendAction>().get());
 }
