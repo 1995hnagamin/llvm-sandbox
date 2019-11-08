@@ -10,6 +10,16 @@
 
 static llvm::cl::OptionCategory LtOptionCategory("LT options");
 
+class ListTypesVisitor : public clang::RecursiveASTVisitor<ListTypesVisitor> {
+public:
+  explicit ListTypesVisitor() {}
+
+  bool VisitType(clang::Type *T) {
+    T->dump();
+    return true;
+  }
+};
+
 int main(int argc, char const **argv) {
   clang::tooling::CommonOptionsParser OptionsParser(argc, argv,
                                                     LtOptionCategory);
