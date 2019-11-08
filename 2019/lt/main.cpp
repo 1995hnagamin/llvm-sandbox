@@ -11,7 +11,8 @@
 static llvm::cl::OptionCategory LtOptionCategory("LT options");
 
 int main(int argc, char const **argv) {
-  clang::tooling::CommonOptionsParser OptionsParser(argc, argv, LtOptionCategory);
+  clang::tooling::CommonOptionsParser OptionsParser(argc, argv,
+                                                    LtOptionCategory);
   auto const v = OptionsParser.getSourcePathList();
   for (auto &&x : v) {
     std::cout << x << "\n";
