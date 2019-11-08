@@ -20,6 +20,16 @@ public:
   }
 };
 
+class LtASTConsumer : public clang::ASTConsumer {
+public:
+  explicit LtASTConsumer() = default;
+
+  virtual void HandleTranslationUnit(clang::ASTContext &Context) override {
+    ListTypesVisitor Visitor;
+    Visitor.TraverseDecl(Context.getTranslationUnitDecl());
+  }
+};
+
 int main(int argc, char const **argv) {
   clang::tooling::CommonOptionsParser OptionsParser(argc, argv,
                                                     LtOptionCategory);
