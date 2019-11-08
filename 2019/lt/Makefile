@@ -10,16 +10,13 @@ all: $(TARGET)
 clean:
 	rm -f $(TARGET)
 
-INCLUDE = -I. -I $(shell $(LLVM_CONFIG) --includedir)
+INCLUDE = -I.
 
 CXXFLAGS = -O2 -g \
-	-std=c++14 \
-	-D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS \
+	$(shell $(LLVM_CONFIG) --cxxflags) \
 	-Wall -Wextra \
 	-pedantic \
 	-Wno-unused-parameter \
-	-fno-rtti \
-	$(INCLUDE)
 
 LIBS = -L$(shell $(LLVM_CONFIG) --libdir) \
 	-lclangFrontend -lclangSerialization -lclangDriver \
