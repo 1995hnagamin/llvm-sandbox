@@ -12,7 +12,7 @@ static llvm::cl::OptionCategory LtOptionCategory("LT options");
 
 class ListTypesVisitor : public clang::RecursiveASTVisitor<ListTypesVisitor> {
 public:
-  explicit ListTypesVisitor() {}
+  explicit ListTypesVisitor() = default;
 
   bool VisitType(clang::Type *T) {
     T->dump();
