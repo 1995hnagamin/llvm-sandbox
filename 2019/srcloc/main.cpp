@@ -27,6 +27,12 @@ public:
     return true;
   }
 
+  bool VisitStmt(clang::Stmt *S) {
+    auto const range = S->getSourceRange();
+    outputSourceRange(range, Compiler->getSourceManager(), "Stmt");
+    return true;
+  }
+
 private:
   clang::CompilerInstance *Compiler;
 };
