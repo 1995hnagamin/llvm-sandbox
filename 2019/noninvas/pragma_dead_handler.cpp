@@ -30,5 +30,5 @@ void PragmaDeadHandler::HandlePragma(clang::Preprocessor &PP,
     PP.Lex(Tok);
   } while (Tok.isNot(tok::eod));
 
-  DirectiveQueue.push({ DeadDirective.str(), Loc });
+  DirectiveQueue.push({DeadDirective.str(), Loc});
 }

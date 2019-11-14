@@ -7,7 +7,8 @@
 
 struct PragmaDeadHandler : public clang::PragmaHandler {
   PragmaDeadHandler();
-  void HandlePragma(clang::Preprocessor &PP, clang::PragmaIntroducerKind Introducer,
+  void HandlePragma(clang::Preprocessor &PP,
+                    clang::PragmaIntroducerKind Introducer,
                     clang::Token &FirstToken) override;
 };
 
