@@ -61,7 +61,7 @@ public:
 
   bool VisitStmt(clang::Stmt *S) {
     auto const range = S->getSourceRange();
-    outputSourceRange(range, *Compiler, "Stmt");
+    outputSourceRange(range, *Compiler, addParen("Stmt", S->getStmtClassName());
     return true;
   }
 
