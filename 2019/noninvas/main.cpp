@@ -5,6 +5,7 @@
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/CommandLine.h"
+#include "pragma_dead_handler.hpp"
 #include <memory>
 
 static llvm::cl::OptionCategory LTOptionCategory("LT options");
@@ -33,6 +34,9 @@ class LTFrontendAction : public clang::ASTFrontendAction {
 public:
   virtual std::unique_ptr<clang::ASTConsumer>
   CreateASTConsumer(clang::CompilerInstance &Compiler, llvm::StringRef File) {
+    auto &PP = Compiler.getPreprocessor();
+    auto const pHandler = new PragmaDeadHandler;
+    PP.AddPragmaHandler(pHandler);
     return llvm::make_unique<LTASTConsumer>();
   }
 };
