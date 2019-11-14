@@ -28,5 +28,7 @@ LIBS = -L$(shell $(LLVM_CONFIG) --libdir) \
 	-lclang -ldl -ltinfo -lz -lpthread \
 	$(shell $(LLVM_CONFIG) --libs mcparser bitreader support mc option profiledata)
 
-$(TARGET): main.cpp
-	$(CXX) main.cpp $(CXXFLAGS) $(LIBS) -o $(TARGET)
+OBJS = main.o pragma_dead_handler.o
+
+$(TARGET): $(OBJS)
+	$(CXX) $(OBJS) $(CXXFLAGS) $(LIBS) -o $(TARGET)
