@@ -41,9 +41,6 @@ int main(int argc, char const **argv) {
   clang::tooling::CommonOptionsParser OptionsParser(argc, argv,
                                                     LTOptionCategory);
   auto const v = OptionsParser.getSourcePathList();
-  for (auto &&x : v) {
-    llvm::errs() << x << "\n";
-  }
   clang::tooling::ClangTool Tool(OptionsParser.getCompilations(),
                                  OptionsParser.getSourcePathList());
   return Tool.run(
