@@ -11,9 +11,10 @@
 static llvm::cl::OptionCategory SrcLocOptionCategory("SrcLoc options");
 
 void outputSourceRange(clang::SourceRange const &range,
-                       clang::SourceManager const &SM, std::string const &msg) {
+                       clang::CompilerInstance const &Compiler,
+                       std::string const &msg) {
   llvm::outs() << msg << ": ";
-  range.print(llvm::outs(), SM);
+  range.print(llvm::outs(), Compiler.getSourceManager());
   llvm::outs() << "\n";
 }
 
@@ -23,13 +24,13 @@ public:
 
   bool VisitDecl(clang::Decl *D) {
     auto const range = D->getSourceRange();
-    outputSourceRange(range, Compiler->getSourceManager(), "Decl");
+    outputSourceRange(range, *Compiler, "Decl");
     return true;
   }
 
   bool VisitStmt(clang::Stmt *S) {
     auto const range = S->getSourceRange();
-    outputSourceRange(range, Compiler->getSourceManager(), "Stmt");
+    outputSourceRange(range, *Compiler, "Stmt");
     return true;
   }
 
