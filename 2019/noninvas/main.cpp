@@ -26,7 +26,7 @@ public:
     }
     return true;
   }
-  bool VisiStmt(clang::Stmt *S) {
+  bool VisitStmt(clang::Stmt *S) {
     auto const Range = S->getSourceRange();
     if (!DirectiveQueue.empty() &&
         DirectiveQueue.front().SrcLoc < Range.getBegin()) {
