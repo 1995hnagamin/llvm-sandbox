@@ -3,7 +3,7 @@ CXX = clang++
 
 .PHONY: all clean
 
-TARGET = lt
+TARGET = tips
 
 all: $(TARGET)
 

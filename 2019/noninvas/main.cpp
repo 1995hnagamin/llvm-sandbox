@@ -8,11 +8,11 @@
 #include "llvm/Support/CommandLine.h"
 #include <memory>
 
-static llvm::cl::OptionCategory LTOptionCategory("LT options");
+static llvm::cl::OptionCategory TipsOptionCategory("Tips options");
 
-class ListTypesVisitor : public clang::RecursiveASTVisitor<ListTypesVisitor> {
+class ShowTipsVisitor : public clang::RecursiveASTVisitor<ShowTipsVisitor> {
 public:
-  explicit ListTypesVisitor(clang::CompilerInstance *C) : Compiler(C) {}
+  explicit ShowTipsVisitor(clang::CompilerInstance *C) : Compiler(C) {}
 
   bool VisitDecl(clang::Decl *D) {
     auto const Range = D->getSourceRange();
@@ -43,12 +43,12 @@ private:
   clang::CompilerInstance *Compiler;
 };
 
-class LTASTConsumer : public clang::ASTConsumer {
+class TipsASTConsumer : public clang::ASTConsumer {
 public:
-  explicit LTASTConsumer(clang::CompilerInstance *C) : Compiler(C) {}
+  explicit TipsASTConsumer(clang::CompilerInstance *C) : Compiler(C) {}
 
   virtual void HandleTranslationUnit(clang::ASTContext &Context) override {
-    ListTypesVisitor Visitor(Compiler);
+    ShowTipsVisitor Visitor(Compiler);
     Visitor.TraverseDecl(Context.getTranslationUnitDecl());
   }
 
@@ -56,23 +56,23 @@ private:
   clang::CompilerInstance *Compiler;
 };
 
-class LTFrontendAction : public clang::ASTFrontendAction {
+class TipsFrontendAction : public clang::ASTFrontendAction {
 public:
   virtual std::unique_ptr<clang::ASTConsumer>
   CreateASTConsumer(clang::CompilerInstance &Compiler, llvm::StringRef File) {
     auto &PP = Compiler.getPreprocessor();
     auto const pHandler = new PragmaDeadHandler;
     PP.AddPragmaHandler(pHandler);
-    return llvm::make_unique<LTASTConsumer>(&Compiler);
+    return llvm::make_unique<TipsASTConsumer>(&Compiler);
   }
 };
 
 int main(int argc, char const **argv) {
   clang::tooling::CommonOptionsParser OptionsParser(argc, argv,
-                                                    LTOptionCategory);
+                                                    TipsOptionCategory);
   auto const v = OptionsParser.getSourcePathList();
   clang::tooling::ClangTool Tool(OptionsParser.getCompilations(),
                                  OptionsParser.getSourcePathList());
   return Tool.run(
-      clang::tooling::newFrontendActionFactory<LTFrontendAction>().get());
+      clang::tooling::newFrontendActionFactory<TipsFrontendAction>().get());
 }
