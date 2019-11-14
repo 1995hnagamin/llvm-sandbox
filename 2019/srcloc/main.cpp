@@ -15,7 +15,13 @@ void outputSourceRange(clang::SourceRange const &range,
                        std::string const &msg) {
   llvm::outs() << msg << ": ";
   range.print(llvm::outs(), Compiler.getSourceManager());
-  llvm::outs() << "\n";
+  auto const first = clang::Lexer::getSourceText(
+      clang::CharSourceRange::getTokenRange(range.getBegin()),
+      Compiler.getSourceManager(), Compiler.getLangOpts());
+  auto const last = clang::Lexer::getSourceText(
+      clang::CharSourceRange::getTokenRange(range.getEnd()),
+      Compiler.getSourceManager(), Compiler.getLangOpts());
+  llvm::outs() << "\n" << first << " ... " << last << "\n\n";
 }
 
 class SrcLocVisitor : public clang::RecursiveASTVisitor<SrcLocVisitor> {
