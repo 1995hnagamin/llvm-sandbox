@@ -8,7 +8,7 @@ TARGET = lt
 all: $(TARGET)
 
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET) $(OBJS)
 
 INCLUDE = -I.
 
