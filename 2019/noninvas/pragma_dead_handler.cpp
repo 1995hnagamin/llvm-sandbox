@@ -21,9 +21,6 @@ void PragmaDeadHandler::HandlePragma(clang::Preprocessor &PP,
   Token Tok;
   std::stringstream DeadDirective;
 
-  if (Tok.is(tok::eod)) {
-    return;
-  }
   PP.Lex(Tok);
   do {
     DeadDirective << PP.getSpelling(Tok);
