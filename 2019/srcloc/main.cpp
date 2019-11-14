@@ -10,6 +10,10 @@
 
 static llvm::cl::OptionCategory SrcLocOptionCategory("SrcLoc options");
 
+std::string addParen(std::string const &f, std::string const &x) {
+  return f + "(" + x + ")";
+}
+
 llvm::StringRef getToken(clang::SourceLocation Loc,
                          clang::CompilerInstance const &Compiler) {
   return clang::Lexer::getSourceText(clang::CharSourceRange::getTokenRange(Loc),
@@ -45,8 +49,7 @@ public:
 
   bool VisitDecl(clang::Decl *D) {
     auto const range = D->getSourceRange();
-    outputSourceRange(range, *Compiler,
-                      std::string("Decl(") + D->getDeclKindName() + ")");
+    outputSourceRange(range, *Compiler, addParen("Decl", D->getDeclKindName());
     return true;
   }
 
