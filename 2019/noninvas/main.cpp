@@ -14,10 +14,6 @@ class ListTypesVisitor : public clang::RecursiveASTVisitor<ListTypesVisitor> {
 public:
   explicit ListTypesVisitor() = default;
 
-  bool VisitType(clang::Type *T) {
-    T->dump();
-    return true;
-  }
   bool VisitDecl(clang::Decl *D) {
     auto const Range = D->getSourceRange();
     if (!DirectiveQueue.empty() &&
