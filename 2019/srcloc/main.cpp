@@ -18,6 +18,10 @@ void outputSourceRange(clang::SourceRange const &range,
   auto const first = clang::Lexer::getSourceText(
       clang::CharSourceRange::getTokenRange(range.getBegin()),
       Compiler.getSourceManager(), Compiler.getLangOpts());
+  if (range.getBegin() == range.getEnd()) {
+    llvm::outs() << "\n" << first << "\n\n";
+    return;
+  }
   auto const last = clang::Lexer::getSourceText(
       clang::CharSourceRange::getTokenRange(range.getEnd()),
       Compiler.getSourceManager(), Compiler.getLangOpts());
