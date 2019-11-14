@@ -12,7 +12,7 @@ static llvm::cl::OptionCategory LTOptionCategory("LT options");
 
 class ListTypesVisitor : public clang::RecursiveASTVisitor<ListTypesVisitor> {
 public:
-  explicit ListTypesVisitor() = default;
+  explicit ListTypesVisitor(clang::CompilerInstance *C) : Compiler(C) {}
 
   bool VisitDecl(clang::Decl *D) {
     auto const Range = D->getSourceRange();
@@ -21,19 +21,27 @@ public:
       auto const Dir = DirectiveQueue.front();
       DirectiveQueue.pop();
       llvm::outs() << Dir.Message << ": " << D->getDeclKindName() << "\n";
+      Dir.SrcLoc.print(llvm::outs(), Compiler->getSourceManager());
+      llvm::outs() << "\n";
     }
     return true;
   }
+
+private:
+  clang::CompilerInstance *Compiler;
 };
 
 class LTASTConsumer : public clang::ASTConsumer {
 public:
-  explicit LTASTConsumer() = default;
+  explicit LTASTConsumer(clang::CompilerInstance *C) : Compiler(C) {}
 
   virtual void HandleTranslationUnit(clang::ASTContext &Context) override {
-    ListTypesVisitor Visitor;
+    ListTypesVisitor Visitor(Compiler);
     Visitor.TraverseDecl(Context.getTranslationUnitDecl());
   }
+
+private:
+  clang::CompilerInstance *Compiler;
 };
 
 class LTFrontendAction : public clang::ASTFrontendAction {
@@ -43,7 +51,7 @@ public:
     auto &PP = Compiler.getPreprocessor();
     auto const pHandler = new PragmaDeadHandler;
     PP.AddPragmaHandler(pHandler);
-    return llvm::make_unique<LTASTConsumer>();
+    return llvm::make_unique<LTASTConsumer>(&Compiler);
   }
 };
 
