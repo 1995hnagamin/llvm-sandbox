@@ -35,6 +35,14 @@ class SrcLocVisitor : public clang::RecursiveASTVisitor<SrcLocVisitor> {
 public:
   explicit SrcLocVisitor(clang::CompilerInstance *C) : Compiler(C) {}
 
+  bool VisitAttr(clang::Attr *A) {
+    auto const Loc = A->getLocation();
+    llvm::outs() << "Attr: ";
+    Loc.print(llvm::outs(), Compiler->getSourceManager());
+    llvm::outs() << "\n" << A->getSpelling() << "\n\n";
+    return true;
+  }
+
   bool VisitDecl(clang::Decl *D) {
     auto const range = D->getSourceRange();
     outputSourceRange(range, *Compiler,
@@ -42,9 +50,21 @@ public:
     return true;
   }
 
+  bool VisitQualifiedTypeLoc(clang::QualifiedTypeLoc TL) {
+    auto const range = TL.getLocalSourceRange();
+    outputSourceRange(range, *Compiler, "QualifiedTypeLoc");
+    return true;
+  }
+
   bool VisitStmt(clang::Stmt *S) {
     auto const range = S->getSourceRange();
     outputSourceRange(range, *Compiler, "Stmt");
+    return true;
+  }
+
+  bool VisitTypeLoc(clang::TypeLoc TL) {
+    auto const range = TL.getSourceRange();
+    outputSourceRange(range, *Compiler, "TypeLoc");
     return true;
   }
 
