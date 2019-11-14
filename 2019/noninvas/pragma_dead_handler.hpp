@@ -7,4 +7,11 @@ struct PragmaDeadHandler : public clang::PragmaHandler {
                     clang::Token &FirstToken) override;
 };
 
+struct Directive {
+  std::string Message;
+  clang::SourceLocation SrcLoc;
+};
+
+extern std::queue<Directive> DirectiveQueue;
+
 #endif /* !PRAGMA_DEAD_HANDLER_HPP */

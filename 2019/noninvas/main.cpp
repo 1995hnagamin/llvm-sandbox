@@ -5,8 +5,9 @@
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/CommandLine.h"
-#include "pragma_dead_handler.hpp"
 #include <memory>
+#include <queue>
+#include "pragma_dead_handler.hpp"
 
 static llvm::cl::OptionCategory LTOptionCategory("LT options");
 

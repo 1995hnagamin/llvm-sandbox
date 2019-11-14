@@ -8,8 +8,11 @@
 #include "clang/Parse/RAIIObjectsForParser.h"
 #include "clang/Sema/Scope.h"
 #include "llvm/ADT/StringSwitch.h"
-#include "pragma_dead_handler.hpp"
+#include <queue>
 #include <sstream>
+#include "pragma_dead_handler.hpp"
+
+std::queue<Directive> DirectiveQueue;
 
 using namespace clang;
 
