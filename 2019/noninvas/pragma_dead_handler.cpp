@@ -25,12 +25,11 @@ void PragmaDeadHandler::HandlePragma(clang::Preprocessor &PP,
   std::stringstream DeadDirective;
 
   PP.Lex(Tok);
+  auto const Loc = Tok.getLocation();
   do {
     DeadDirective << PP.getSpelling(Tok);
     PP.Lex(Tok);
   } while (Tok.isNot(tok::eod));
 
-  llvm::outs() << DeadDirective.str() << "\n";
-
-  abort();
+  DirectiveQueue.push({ DeadDirective.str(), Loc });
 }
