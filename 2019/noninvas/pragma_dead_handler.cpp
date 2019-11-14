@@ -1,3 +1,4 @@
+#include "pragma_dead_handler.hpp"
 #include "clang/AST/ASTContext.h"
 #include "clang/Basic/PragmaKinds.h"
 #include "clang/Basic/TargetInfo.h"
@@ -8,9 +9,7 @@
 #include "clang/Parse/RAIIObjectsForParser.h"
 #include "clang/Sema/Scope.h"
 #include "llvm/ADT/StringSwitch.h"
-#include <queue>
 #include <sstream>
-#include "pragma_dead_handler.hpp"
 
 std::queue<Directive> DirectiveQueue;
 

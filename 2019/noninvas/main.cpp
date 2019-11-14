@@ -1,3 +1,4 @@
+#include "pragma_dead_handler.hpp"
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/Frontend/CompilerInstance.h"
@@ -6,8 +7,6 @@
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/CommandLine.h"
 #include <memory>
-#include <queue>
-#include "pragma_dead_handler.hpp"
 
 static llvm::cl::OptionCategory LTOptionCategory("LT options");
 
