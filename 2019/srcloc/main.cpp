@@ -10,21 +10,24 @@
 
 static llvm::cl::OptionCategory SrcLocOptionCategory("SrcLoc options");
 
+llvm::StringRef getToken(clang::SourceLocation Loc,
+                         clang::CompilerInstance const &Compiler) {
+  return clang::Lexer::getSourceText(clang::CharSourceRange::getTokenRange(Loc),
+                                     Compiler.getSourceManager(),
+                                     Compiler.getLangOpts());
+}
+
 void outputSourceRange(clang::SourceRange const &range,
                        clang::CompilerInstance const &Compiler,
                        std::string const &msg) {
   llvm::outs() << msg << ": ";
   range.print(llvm::outs(), Compiler.getSourceManager());
-  auto const first = clang::Lexer::getSourceText(
-      clang::CharSourceRange::getTokenRange(range.getBegin()),
-      Compiler.getSourceManager(), Compiler.getLangOpts());
+  auto const first = getToken(range.getBegin(), Compiler);
   if (range.getBegin() == range.getEnd()) {
     llvm::outs() << "\n" << first << "\n\n";
     return;
   }
-  auto const last = clang::Lexer::getSourceText(
-      clang::CharSourceRange::getTokenRange(range.getEnd()),
-      Compiler.getSourceManager(), Compiler.getLangOpts());
+  auto const last = getToken(range.getEnd(), Compiler);
   llvm::outs() << "\n" << first << " ... " << last << "\n\n";
 }
 
