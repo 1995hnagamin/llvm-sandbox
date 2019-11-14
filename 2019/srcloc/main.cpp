@@ -19,33 +19,36 @@ void outputSourceRange(clang::SourceRange const &range,
 
 class SrcLocVisitor : public clang::RecursiveASTVisitor<SrcLocVisitor> {
 public:
-  explicit SrcLocVisitor(clang::SourceManager *SM) : source_manager(SM) {}
+  explicit SrcLocVisitor(clang::CompilerInstance *C) : Compiler(C) {}
 
   bool VisitDecl(clang::Decl *D) {
     auto const range = D->getSourceRange();
-    outputSourceRange(range, *source_manager, "Decl");
+    outputSourceRange(range, Compiler->getSourceManager(), "Decl");
     return true;
   }
 
 private:
-  clang::SourceManager *source_manager;
+  clang::CompilerInstance *Compiler;
 };
 
 class SrcLocASTConsumer : public clang::ASTConsumer {
 public:
-  explicit SrcLocASTConsumer() = default;
+  explicit SrcLocASTConsumer(clang::CompilerInstance *C) : Compiler(C) {}
 
   virtual void HandleTranslationUnit(clang::ASTContext &Context) override {
-    SrcLocVisitor Visitor(&Context.getSourceManager());
+    SrcLocVisitor Visitor(Compiler);
     Visitor.TraverseDecl(Context.getTranslationUnitDecl());
   }
+
+private:
+  clang::CompilerInstance *Compiler;
 };
 
 class SrcLocFrontendAction : public clang::ASTFrontendAction {
 public:
   virtual std::unique_ptr<clang::ASTConsumer>
   CreateASTConsumer(clang::CompilerInstance &Compiler, llvm::StringRef File) {
-    return llvm::make_unique<SrcLocASTConsumer>();
+    return llvm::make_unique<SrcLocASTConsumer>(&Compiler);
   }
 };
 
