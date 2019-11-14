@@ -37,7 +37,8 @@ public:
 
   bool VisitDecl(clang::Decl *D) {
     auto const range = D->getSourceRange();
-    outputSourceRange(range, *Compiler, "Decl");
+    outputSourceRange(range, *Compiler,
+                      std::string("Decl(") + D->getDeclKindName() + ")");
     return true;
   }
 
