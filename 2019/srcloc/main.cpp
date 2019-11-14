@@ -6,8 +6,16 @@
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/CommandLine.h"
 #include <memory>
+#include <string>
 
 static llvm::cl::OptionCategory SrcLocOptionCategory("SrcLoc options");
+
+void outputSourceRange(clang::SourceRange const &range,
+                       clang::SourceManager const &SM, std::string const &msg) {
+  llvm::outs() << msg << ": ";
+  range.print(llvm::outs(), SM);
+  llvm::outs() << "\n";
+}
 
 class SrcLocVisitor : public clang::RecursiveASTVisitor<SrcLocVisitor> {
 public:
@@ -15,8 +23,7 @@ public:
 
   bool VisitDecl(clang::Decl *D) {
     auto const range = D->getSourceRange();
-    range.print(llvm::outs(), *source_manager);
-    llvm::outs() << "\n";
+    outputSourceRange(range, *source_manager, "Decl");
     return true;
   }
 
