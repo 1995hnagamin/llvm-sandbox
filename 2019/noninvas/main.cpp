@@ -19,6 +19,16 @@ public:
     T->dump();
     return true;
   }
+  bool VisitDecl(clang::Decl *D) {
+    auto const Range = D->getSourceRange();
+    if (!DirectiveQueue.empty() &&
+        DirectiveQueue.front().SrcLoc < Range.getBegin()) {
+      auto const Dir = DirectiveQueue.front();
+      DirectiveQueue.pop();
+      llvm::outs() << Dir.Message << ": " << D->getDeclKindName() << "\n";
+    }
+    return true;
+  }
 };
 
 class LTASTConsumer : public clang::ASTConsumer {
