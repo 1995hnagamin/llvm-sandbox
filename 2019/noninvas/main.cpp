@@ -26,6 +26,18 @@ public:
     }
     return true;
   }
+  bool VisiStmt(clang::Stmt *S) {
+    auto const Range = S->getSourceRange();
+    if (!DirectiveQueue.empty() &&
+        DirectiveQueue.front().SrcLoc < Range.getBegin()) {
+      auto const Dir = DirectiveQueue.front();
+      DirectiveQueue.pop();
+      llvm::outs() << Dir.Message << ": " << S->getStmtClassName() << "\n";
+      Dir.SrcLoc.print(llvm::outs(), Compiler->getSourceManager());
+      llvm::outs() << "\n";
+    }
+    return true;
+  }
 
 private:
   clang::CompilerInstance *Compiler;
