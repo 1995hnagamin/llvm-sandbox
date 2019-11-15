@@ -46,17 +46,18 @@ private:
 
 class LTASTConsumer : public clang::ASTConsumer {
 public:
-  explicit LTASTConsumer(clang::CompilerInstance *C, std::queue<Directive> *Q)
-      : Compiler(C), Queue(Q) {}
+  explicit LTASTConsumer(clang::CompilerInstance *C) : Compiler(C), Queue() {}
 
   virtual void HandleTranslationUnit(clang::ASTContext &Context) override {
-    ListTypesVisitor Visitor(Compiler, Queue);
+    ListTypesVisitor Visitor(Compiler, &Queue);
     Visitor.TraverseDecl(Context.getTranslationUnitDecl());
   }
 
 private:
   clang::CompilerInstance *Compiler;
-  std::queue<Directive> *Queue;
+
+public:
+  std::queue<Directive> Queue;
 };
 
 class LTFrontendAction : public clang::ASTFrontendAction {
@@ -64,10 +65,10 @@ public:
   virtual std::unique_ptr<clang::ASTConsumer>
   CreateASTConsumer(clang::CompilerInstance &Compiler, llvm::StringRef File) {
     auto &PP = Compiler.getPreprocessor();
-    auto const pQue = new std::queue<Directive>;
-    auto const pHandler = new PragmaDeadHandler(pQue);
+    auto const AC = new LTASTConsumer(&Compiler);
+    auto const pHandler = new PragmaDeadHandler(&AC->Queue);
     PP.AddPragmaHandler(pHandler);
-    return llvm::make_unique<LTASTConsumer>(&Compiler, pQue);
+    return std::unique_ptr<clang::ASTConsumer>(AC);
   }
 };
 
