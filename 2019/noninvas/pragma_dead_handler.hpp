@@ -5,18 +5,19 @@
 #include "clang/Lex/Pragma.h"
 #include <queue>
 
+struct Directive;
+
 struct PragmaDeadHandler : public clang::PragmaHandler {
-  PragmaDeadHandler();
+  PragmaDeadHandler(std::queue<Directive> *);
   void HandlePragma(clang::Preprocessor &PP,
                     clang::PragmaIntroducerKind Introducer,
                     clang::Token &FirstToken) override;
+  std::queue<Directive> *queue;
 };
 
 struct Directive {
   std::string Message;
   clang::SourceLocation SrcLoc;
 };
-
-extern std::queue<Directive> DirectiveQueue;
 
 #endif /* !PRAGMA_DEAD_HANDLER_HPP */

@@ -12,14 +12,15 @@ static llvm::cl::OptionCategory LTOptionCategory("LT options");
 
 class ListTypesVisitor : public clang::RecursiveASTVisitor<ListTypesVisitor> {
 public:
-  explicit ListTypesVisitor(clang::CompilerInstance *C) : Compiler(C) {}
+  explicit ListTypesVisitor(clang::CompilerInstance *C,
+                            std::queue<Directive> *Q)
+      : Compiler(C), Queue(Q) {}
 
   bool VisitDecl(clang::Decl *D) {
     auto const Range = D->getSourceRange();
-    if (!DirectiveQueue.empty() &&
-        DirectiveQueue.front().SrcLoc < Range.getBegin()) {
-      auto const Dir = DirectiveQueue.front();
-      DirectiveQueue.pop();
+    if (!Queue->empty() && Queue->front().SrcLoc < Range.getBegin()) {
+      auto const Dir = Queue->front();
+      Queue->pop();
       llvm::outs() << Dir.Message << ": " << D->getDeclKindName() << "\n";
       Dir.SrcLoc.print(llvm::outs(), Compiler->getSourceManager());
       llvm::outs() << "\n";
@@ -28,10 +29,9 @@ public:
   }
   bool VisitStmt(clang::Stmt *S) {
     auto const Range = S->getSourceRange();
-    if (!DirectiveQueue.empty() &&
-        DirectiveQueue.front().SrcLoc < Range.getBegin()) {
-      auto const Dir = DirectiveQueue.front();
-      DirectiveQueue.pop();
+    if (!Queue->empty() && Queue->front().SrcLoc < Range.getBegin()) {
+      auto const Dir = Queue->front();
+      Queue->pop();
       llvm::outs() << Dir.Message << ": " << S->getStmtClassName() << "\n";
       Dir.SrcLoc.print(llvm::outs(), Compiler->getSourceManager());
       llvm::outs() << "\n";
@@ -41,19 +41,22 @@ public:
 
 private:
   clang::CompilerInstance *Compiler;
+  std::queue<Directive> *Queue;
 };
 
 class LTASTConsumer : public clang::ASTConsumer {
 public:
-  explicit LTASTConsumer(clang::CompilerInstance *C) : Compiler(C) {}
+  explicit LTASTConsumer(clang::CompilerInstance *C, std::queue<Directive> *Q)
+      : Compiler(C), Queue(Q) {}
 
   virtual void HandleTranslationUnit(clang::ASTContext &Context) override {
-    ListTypesVisitor Visitor(Compiler);
+    ListTypesVisitor Visitor(Compiler, Queue);
     Visitor.TraverseDecl(Context.getTranslationUnitDecl());
   }
 
 private:
   clang::CompilerInstance *Compiler;
+  std::queue<Directive> *Queue;
 };
 
 class LTFrontendAction : public clang::ASTFrontendAction {
@@ -61,9 +64,10 @@ public:
   virtual std::unique_ptr<clang::ASTConsumer>
   CreateASTConsumer(clang::CompilerInstance &Compiler, llvm::StringRef File) {
     auto &PP = Compiler.getPreprocessor();
-    auto const pHandler = new PragmaDeadHandler;
+    auto const pQue = new std::queue<Directive>;
+    auto const pHandler = new PragmaDeadHandler(pQue);
     PP.AddPragmaHandler(pHandler);
-    return llvm::make_unique<LTASTConsumer>(&Compiler);
+    return llvm::make_unique<LTASTConsumer>(&Compiler, pQue);
   }
 };
 

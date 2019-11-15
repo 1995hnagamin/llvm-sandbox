@@ -11,11 +11,10 @@
 #include "llvm/ADT/StringSwitch.h"
 #include <sstream>
 
-std::queue<Directive> DirectiveQueue;
-
 using namespace clang;
 
-PragmaDeadHandler::PragmaDeadHandler() : PragmaHandler("dead") {}
+PragmaDeadHandler::PragmaDeadHandler(std::queue<Directive> *que)
+    : PragmaHandler("dead"), queue(que) {}
 
 void PragmaDeadHandler::HandlePragma(clang::Preprocessor &PP,
                                      PragmaIntroducerKind Introducer,
@@ -30,5 +29,5 @@ void PragmaDeadHandler::HandlePragma(clang::Preprocessor &PP,
     PP.Lex(Tok);
   } while (Tok.isNot(tok::eod));
 
-  DirectiveQueue.push({DeadDirective.str(), Loc});
+  queue->push({DeadDirective.str(), Loc});
 }
