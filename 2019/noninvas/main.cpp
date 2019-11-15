@@ -53,10 +53,11 @@ public:
     Visitor.TraverseDecl(Context.getTranslationUnitDecl());
   }
 
-  std::queue<Directive> Queue;
+  friend class LTFrontendAction;
 
 private:
   clang::CompilerInstance *Compiler;
+  std::queue<Directive> Queue;
 };
 
 class LTFrontendAction : public clang::ASTFrontendAction {
